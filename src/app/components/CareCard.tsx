@@ -5,13 +5,16 @@ interface CareCardProps {
   title: string;
   count: number;
   rotation: string;
+  onClick?: () => void;
 }
 
-export function CareCard({ icon, title, count, rotation }: CareCardProps) {
+export function CareCard({ icon, title, count, rotation, onClick }: CareCardProps) {
   return (
     <div
+      onClick={onClick}
       className="p-4 flex flex-col"
       style={{
+        cursor: onClick ? 'pointer' : 'default',
         backgroundColor: '#FFFFFF',
         border: '1px solid #FFDCF6',
         transform: `rotate(${rotation})`,

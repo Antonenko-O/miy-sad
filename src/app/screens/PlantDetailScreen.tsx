@@ -68,6 +68,15 @@ export function PlantDetailScreen({ plantId, onBack, onSelectPlant }: PlantDetai
 
   const rotations = ['-0.8deg', '0.5deg', '-0.5deg', '0.7deg', '-0.6deg', '0.4deg'];
 
+  const [added, setAdded] = React.useState(false);
+  const [showPopup, setShowPopup] = React.useState(false);
+
+  const handleAdd = () => {
+    setAdded(true);
+    setShowPopup(true);
+    setTimeout(() => setShowPopup(false), 3000);
+  };
+
   return (
     <div>
       {/* Hero */}
@@ -121,13 +130,31 @@ export function PlantDetailScreen({ plantId, onBack, onSelectPlant }: PlantDetai
         </div>
 
         {/* Add button */}
-        <button style={{
-          width: '100%', backgroundColor: cfg.accent, color: '#FFFFFF',
-          padding: '14px', borderRadius: '4px', border: 'none', cursor: 'pointer',
-          fontFamily: 'Caveat, cursive', fontSize: '22px', fontWeight: 600, marginBottom: '32px',
-        }}>
-          + Додати до мого саду
+        <button
+          onClick={handleAdd}
+          style={{
+            width: '100%', backgroundColor: added ? `${cfg.accent}99` : cfg.accent, color: '#FFFFFF',
+            padding: '14px', borderRadius: '4px', border: 'none', cursor: added ? 'default' : 'pointer',
+            fontFamily: 'Caveat, cursive', fontSize: '22px', fontWeight: 600, marginBottom: '32px',
+            transition: 'background-color 0.3s',
+          }}>
+          {added ? '✓ Додано до мого саду' : '+ Додати до мого саду'}
         </button>
+
+        {/* Success popup */}
+        <div style={{
+          position: 'fixed', bottom: '100px', left: '50%', transform: 'translateX(-50%)',
+          backgroundColor: cfg.accent, color: '#FFFFFF',
+          padding: '12px 20px', borderRadius: '24px',
+          fontFamily: 'DM Sans, sans-serif', fontSize: '14px', fontWeight: 500,
+          boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
+          zIndex: 200, whiteSpace: 'nowrap',
+          opacity: showPopup ? 1 : 0,
+          transition: 'opacity 0.4s ease',
+          pointerEvents: 'none',
+        }}>
+          🌱 {plant.name} додано до саду!
+        </div>
 
         {/* Care */}
         <h2 style={{ fontFamily: 'Caveat, cursive', fontSize: '28px', color: cfg.accent, fontWeight: 600, marginBottom: '16px' }}>

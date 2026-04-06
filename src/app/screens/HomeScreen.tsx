@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { CareCard } from '../components/CareCard';
+import { CareDrawer } from '../components/CareDrawer';
 import { PlantCard } from '../components/PlantCard';
 import { catalog } from '../data/plants';
 
@@ -41,6 +42,7 @@ interface HomeScreenProps {
 }
 
 export function HomeScreen({ onAddPlant }: HomeScreenProps) {
+  const [drawerType, setDrawerType] = useState<'water' | 'prune' | 'fertilize' | null>(null);
   const now = new Date();
   const days = ['неділю', 'понеділок', 'вівторок', 'середу', 'четвер', 'п\'ятницю', 'суботу'];
   const months = ['січня', 'лютого', 'березня', 'квітня', 'травня', 'червня',
@@ -64,9 +66,9 @@ export function HomeScreen({ onAddPlant }: HomeScreenProps) {
         Сьогодні потрібен догляд
       </h2>
       <div style={{ display: 'flex', gap: '16px', overflowX: 'auto', paddingBottom: '8px', marginBottom: '32px' }}>
-        <CareCard icon={<WaterIcon />} title="Полив" count={5} rotation="-1.5deg" />
-        <CareCard icon={<PruneIcon />} title="Обрізка" count={2} rotation="0.5deg" />
-        <CareCard icon={<FertilizeIcon />} title="Підживлення" count={3} rotation="-0.8deg" />
+        <CareCard icon={<WaterIcon />} title="Полив" count={5} rotation="-1.5deg" onClick={() => setDrawerType('water')} />
+        <CareCard icon={<PruneIcon />} title="Обрізка" count={2} rotation="0.5deg" onClick={() => setDrawerType('prune')} />
+        <CareCard icon={<FertilizeIcon />} title="Підживлення" count={3} rotation="-0.8deg" onClick={() => setDrawerType('fertilize')} />
       </div>
 
       {/* My Garden Preview */}
@@ -92,6 +94,12 @@ export function HomeScreen({ onAddPlant }: HomeScreenProps) {
           <PlantCard key={plant.id} name={plant.name} latinName={plant.latinName ?? ''} category={plant.category} index={index} />
         ))}
       </div>
+
+      <CareDrawer
+        open={drawerType !== null}
+        onClose={() => setDrawerType(null)}
+        type={drawerType}
+      />
     </div>
   );
 }
