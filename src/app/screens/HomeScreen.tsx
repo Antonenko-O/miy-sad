@@ -13,17 +13,23 @@ const WaterIcon = () => (
 
 const PruneIcon = () => (
   <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-    <path d="M10 26L16 20M26 10L20 16M20 16L18 14L10 22L12 24L20 16Z"
-      stroke="#34552B" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" />
-    <circle cx="24" cy="12" r="4" stroke="#34552B" strokeWidth="1" />
+    {/* Scissors */}
+    <circle cx="12" cy="24" r="4" stroke="#34552B" strokeWidth="1.5" />
+    <circle cx="12" cy="12" r="4" stroke="#34552B" strokeWidth="1.5" />
+    <path d="M15 21L26 10" stroke="#34552B" strokeWidth="1.5" strokeLinecap="round" />
+    <path d="M15 15L26 26" stroke="#34552B" strokeWidth="1.5" strokeLinecap="round" />
   </svg>
 );
 
 const FertilizeIcon = () => (
   <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-    <path d="M18 8C18 8 12 14 12 20C12 24 14 27 18 28C22 27 24 24 24 20C24 14 18 8 18 8Z"
-      stroke="#34552B" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M18 28V34M15 31H21" stroke="#34552B" strokeWidth="1" strokeLinecap="round" />
+    {/* Watering can with dots */}
+    <path d="M8 14H22L20 26H10L8 14Z" stroke="#34552B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M22 17H27L25 22" stroke="#34552B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M8 14C8 14 10 10 15 10H18" stroke="#34552B" strokeWidth="1.5" strokeLinecap="round" />
+    <circle cx="26" cy="25" r="1" fill="#34552B" />
+    <circle cx="29" cy="22" r="1" fill="#34552B" />
+    <circle cx="28" cy="28" r="1" fill="#34552B" />
   </svg>
 );
 
