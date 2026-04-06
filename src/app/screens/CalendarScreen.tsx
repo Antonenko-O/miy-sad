@@ -81,6 +81,10 @@ export function CalendarScreen() {
       {/* Week strip */}
       <div style={{ display: 'flex', justifyContent: 'space-around', marginBottom: '32px' }}>
         {DAYS.map((day, i) => {
+          const startOfWeek = new Date(now);
+          startOfWeek.setDate(now.getDate() - todayDay);
+          const weekDate = new Date(startOfWeek);
+          weekDate.setDate(startOfWeek.getDate() + i);
           const isToday = i === todayDay && monthOffset === 0;
           return (
             <div key={day} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '40px' }}>
@@ -92,7 +96,7 @@ export function CalendarScreen() {
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontFamily: 'DM Sans, sans-serif', fontSize: '14px', fontWeight: isToday ? 600 : 400,
               }}>
-                {i + 1}
+                {weekDate.getDate()}
               </div>
             </div>
           );

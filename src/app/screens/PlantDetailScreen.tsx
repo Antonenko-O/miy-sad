@@ -5,6 +5,33 @@ import { CATEGORY_CONFIG } from '../types';
 
 const MONTHS = ['Січ','Лют','Бер','Кві','Тра','Чер','Лип','Сер','Вер','Жов','Лис','Гру'];
 
+const MONTH_FULL_NAMES = [
+  'січень','лютий','березень','квітень','травень','червень',
+  'липень','серпень','вересень','жовтень','листопад','грудень'
+];
+
+// Parses "Червень–Вересень" → [5,6,7,8], "Квітень, жовтень" → [3,9], "Квітень або жовтень" → [3,9]
+function parseMonthRange(text: string | null | undefined): number[] {
+  if (!text) return [];
+  const lower = text.toLowerCase();
+  const found: number[] = [];
+  MONTH_FULL_NAMES.forEach((m, i) => {
+    if (lower.includes(m)) found.push(i);
+  });
+  if (found.length === 0) return [];
+  if (found.length === 1) return found;
+  // If separator is "–" (range), fill between first and last
+  if (lower.includes('–') || lower.includes('-')) {
+    const start = found[0];
+    const end = found[found.length - 1];
+    const range: number[] = [];
+    for (let i = start; i <= end; i++) range.push(i);
+    return range;
+  }
+  // Otherwise (comma or "або") — just the found months
+  return found;
+}
+
 const Pin = ({ color }: { color: string }) => (
   <div style={{ position: 'absolute', top: '-8px', left: '50%', transform: 'translateX(-50%)' }}>
     <svg width="16" height="16" viewBox="0 0 16 16" fill={color}>
@@ -35,11 +62,9 @@ export function PlantDetailScreen({ plantId, onBack, onSelectPlant }: PlantDetai
     { emoji: '🪲', label: 'Хвороби', value: plant.diseases },
   ].filter((i) => i.value && i.value !== 'None' && i.value !== 'null');
 
-  // Parse bloom months for calendar (simple version)
-  const bloomText = plant.bloomMonths ?? '';
-  const bloomMonthIndices = MONTHS.map((m, i) =>
-    bloomText.toLowerCase().includes(m.toLowerCase()) ? i : -1
-  ).filter((i) => i >= 0);
+  const bloomMonthIndices = parseMonthRange(plant.bloomMonths);
+  const plantingMonthIndices = parseMonthRange(plant.plantingTime);
+  const pruningMonthIndices = parseMonthRange(plant.pruningTime);
 
   const rotations = ['-0.8deg', '0.5deg', '-0.5deg', '0.7deg', '-0.6deg', '0.4deg'];
 
@@ -76,13 +101,21 @@ export function PlantDetailScreen({ plantId, onBack, onSelectPlant }: PlantDetai
 
         {/* Chips */}
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '20px' }}>
-          {[plant.hardiness, plant.height ? `${plant.height} м` : null, plant.regions].filter(Boolean).map((chip) => (
-            <div key={chip} style={{
-              backgroundColor: cfg.cardColor, border: `1px solid ${cfg.accent}`,
-              padding: '6px 12px', borderRadius: '16px',
-              fontFamily: 'DM Sans, sans-serif', fontSize: '12px', color: cfg.accent, fontWeight: 500,
+          {[
+            plant.hardiness ? { icon: '❄️', label: 'Морозостійкість', value: plant.hardiness } : null,
+            plant.height    ? { icon: '📏', label: 'Висота', value: `${plant.height} м` } : null,
+            plant.regions   ? { icon: '📍', label: 'Регіони', value: plant.regions } : null,
+          ].filter(Boolean).map((chip) => chip && (
+            <div key={chip.label} style={{
+              backgroundColor: cfg.cardColor, border: `1px solid ${cfg.accent}20`,
+              padding: '8px 12px', borderRadius: '12px',
+              fontFamily: 'DM Sans, sans-serif', color: cfg.accent,
+              display: 'flex', flexDirection: 'column', gap: '2px',
             }}>
-              {chip}
+              <span style={{ fontSize: '10px', opacity: 0.5, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                {chip.icon} {chip.label}
+              </span>
+              <span style={{ fontSize: '13px', fontWeight: 600 }}>{chip.value}</span>
             </div>
           ))}
         </div>
@@ -129,17 +162,32 @@ export function PlantDetailScreen({ plantId, onBack, onSelectPlant }: PlantDetai
               <div key={m} style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '9px', color: cfg.accent, opacity: 0.5, width: '8.33%', textAlign: 'center' }}>{m}</div>
             ))}
           </div>
-          <div style={{ display: 'flex', gap: '2px', height: '28px' }}>
-            {MONTHS.map((_, i) => (
-              <div key={i} style={{
-                flex: 1, borderRadius: '2px',
-                backgroundColor: bloomMonthIndices.includes(i) ? cfg.tabColor : 'transparent',
-                border: bloomMonthIndices.includes(i) ? 'none' : `1px dashed ${cfg.accent}30`,
-              }} />
-            ))}
+          <div style={{ display: 'flex', gap: '2px', height: '36px' }}>
+            {MONTHS.map((_, i) => {
+              const hasBoom = bloomMonthIndices.includes(i);
+              const hasPlant = plantingMonthIndices.includes(i);
+              const hasPrune = pruningMonthIndices.includes(i);
+              const hasAny = hasBoom || hasPlant || hasPrune;
+              return (
+                <div key={i} style={{
+                  flex: 1, borderRadius: '2px', overflow: 'hidden',
+                  border: hasAny ? 'none' : `1px dashed ${cfg.accent}30`,
+                  display: 'flex', flexDirection: 'column',
+                }}>
+                  {hasBoom && <div style={{ flex: 1, backgroundColor: cfg.tabColor }} />}
+                  {hasPlant && <div style={{ flex: 1, backgroundColor: '#86EFAC' }} />}
+                  {hasPrune && <div style={{ flex: 1, backgroundColor: '#FCA5A5' }} />}
+                  {!hasAny && <div style={{ flex: 1 }} />}
+                </div>
+              );
+            })}
           </div>
-          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', marginTop: '8px' }}>
-            {[{ color: cfg.tabColor, label: 'Цвітіння' }, { color: cfg.accent, label: 'Посадка' }, { color: '#FFE4CC', label: 'Обрізка' }].map((leg) => (
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', marginTop: '8px', flexWrap: 'wrap' }}>
+            {[
+              { color: cfg.tabColor, label: 'Цвітіння' },
+              { color: '#86EFAC', label: 'Висадка' },
+              { color: '#FCA5A5', label: 'Обрізка' },
+            ].map((leg) => (
               <div key={leg.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <div style={{ width: '10px', height: '10px', backgroundColor: leg.color, borderRadius: '2px' }} />
                 <span style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '10px', color: cfg.accent, opacity: 0.7 }}>{leg.label}</span>
