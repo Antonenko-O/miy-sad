@@ -2,9 +2,10 @@ import React, { useState, useMemo } from 'react';
 import { Plus } from 'lucide-react';
 import { CareCard } from '../components/CareCard';
 import { CareDrawer } from '../components/CareDrawer';
-import { PlantCard } from '../components/PlantCard';
+import { PlantIcon } from '../components/PlantIcon';
 import { catalog } from '../data/plants';
 import { getTodayTasks } from '../data/myGarden';
+import { CATEGORY_CONFIG } from '../types';
 
 const WaterIcon = () => (
   <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
@@ -40,9 +41,10 @@ const previewPlants = catalog.plants.slice(0, 6);
 
 interface HomeScreenProps {
   onAddPlant: () => void;
+  onSelectPlant: (id: string) => void;
 }
 
-export function HomeScreen({ onAddPlant }: HomeScreenProps) {
+export function HomeScreen({ onAddPlant, onSelectPlant }: HomeScreenProps) {
   const [drawerType, setDrawerType] = useState<'water' | 'prune' | 'fertilize' | null>(null);
   const tasks = useMemo(() => getTodayTasks(), []);
   const now = new Date();
@@ -91,10 +93,42 @@ export function HomeScreen({ onAddPlant }: HomeScreenProps) {
         </button>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-        {previewPlants.map((plant, index) => (
-          <PlantCard key={plant.id} name={plant.name} latinName={plant.latinName ?? ''} category={plant.category} index={index} />
-        ))}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        {previewPlants.map((plant, index) => {
+          const cfg = CATEGORY_CONFIG[plant.category as import('../types').CategoryId];
+          const rotation = index % 2 === 0 ? '0.4deg' : '-0.4deg';
+          return (
+            <div
+              key={plant.id}
+              onClick={() => onSelectPlant(plant.id)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '12px',
+                backgroundColor: cfg.cardColor,
+                padding: '10px 14px',
+                borderRadius: '4px',
+                transform: `rotate(${rotation})`,
+                boxShadow: '2px 3px 8px rgba(52,85,43,0.08)',
+                cursor: 'pointer', position: 'relative',
+              }}
+            >
+              <div style={{ position: 'absolute', top: '-6px', left: '50%', transform: 'translateX(-50%)' }}>
+                <svg width="12" height="12" viewBox="0 0 16 16" fill={cfg.pinColor}>
+                  <path d="M8 2L9.5 5L12 6L10 8.5L10.5 11L8 9.5L5.5 11L6 8.5L4 6L6.5 5L8 2Z" />
+                </svg>
+              </div>
+              <PlantIcon category={plant.category as import('../types').CategoryId} color={cfg.accent} size={36} opacity={0.5} />
+              <div style={{ flex: 1 }}>
+                <div style={{ fontFamily: 'Caveat, cursive', fontSize: '20px', color: cfg.accent, fontWeight: 600, lineHeight: 1.2 }}>
+                  {plant.name}
+                </div>
+                <div style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '11px', color: cfg.accent, opacity: 0.6, fontStyle: 'italic' }}>
+                  {plant.latinName}
+                </div>
+              </div>
+              <div style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '18px', color: cfg.accent, opacity: 0.3 }}>→</div>
+            </div>
+          );
+        })}
       </div>
 
       <CareDrawer

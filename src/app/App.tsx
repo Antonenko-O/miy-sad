@@ -77,7 +77,7 @@ export default function App() {
             onSelectPlant={handleSelectPlant}
           />
         ) : activeTab === 'home' ? (
-          <HomeScreen onAddPlant={() => setActiveTab('catalog')} />
+          <HomeScreen onAddPlant={() => setActiveTab('catalog')} onSelectPlant={handleSelectPlant} />
         ) : activeTab === 'catalog' ? (
           <CatalogScreen onSelectPlant={handleSelectPlant} />
         ) : activeTab === 'garden' ? (
