@@ -41,18 +41,33 @@ export function CatalogScreen({ onSelectPlant }: CatalogScreenProps) {
 
       {/* Search */}
       <div style={{ position: 'relative', marginBottom: '16px' }}>
+        <span style={{
+          position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)',
+          fontSize: '16px', pointerEvents: 'none',
+        }}>🔍</span>
         <input
-          type="text"
+          type="search"
           placeholder="Пошук рослин..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           style={{
-            width: '100%', padding: '12px 16px',
-            border: `1px solid #BBFFD8`, borderRadius: '24px',
-            fontFamily: 'DM Sans, sans-serif', fontSize: '14px', color: accent,
+            width: '100%', padding: '14px 16px 14px 40px',
+            border: `2px solid #BBFFD8`, borderRadius: '24px',
+            fontFamily: 'DM Sans, sans-serif', fontSize: '16px', color: accent,
             backgroundColor: '#FFFFFF', outline: 'none', boxSizing: 'border-box',
+            WebkitAppearance: 'none',
           }}
         />
+        {query.length > 0 && (
+          <button
+            onClick={() => setQuery('')}
+            style={{
+              position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)',
+              background: 'none', border: 'none', cursor: 'pointer',
+              fontSize: '18px', color: accent, opacity: 0.4, padding: '4px',
+            }}
+          >✕</button>
+        )}
       </div>
 
       {/* Filters */}
