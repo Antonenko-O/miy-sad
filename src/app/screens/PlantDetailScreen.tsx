@@ -2,6 +2,7 @@ import React from 'react';
 import { getPlantById, getCompanions } from '../data/plants';
 import { PlantIcon } from '../components/PlantIcon';
 import { CATEGORY_CONFIG } from '../types';
+import { myGardenPlants } from '../data/myGarden';
 
 const MONTHS = ['Січ','Лют','Бер','Кві','Тра','Чер','Лип','Сер','Вер','Жов','Лис','Гру'];
 
@@ -68,10 +69,12 @@ export function PlantDetailScreen({ plantId, onBack, onSelectPlant }: PlantDetai
 
   const rotations = ['-0.8deg', '0.5deg', '-0.5deg', '0.7deg', '-0.6deg', '0.4deg'];
 
-  const [added, setAdded] = React.useState(false);
+  const alreadyInGarden = myGardenPlants.some(gp => gp.plantId === plantId);
+  const [added, setAdded] = React.useState(alreadyInGarden);
   const [showPopup, setShowPopup] = React.useState(false);
 
   const handleAdd = () => {
+    if (added) return;
     setAdded(true);
     setShowPopup(true);
     setTimeout(() => setShowPopup(false), 3000);
@@ -138,7 +141,7 @@ export function PlantDetailScreen({ plantId, onBack, onSelectPlant }: PlantDetai
             fontFamily: 'Caveat, cursive', fontSize: '22px', fontWeight: 600, marginBottom: '32px',
             transition: 'background-color 0.3s',
           }}>
-          {added ? '✓ Додано до мого саду' : '+ Додати до мого саду'}
+          {added ? (alreadyInGarden ? '✓ Вже є в моєму саду' : '✓ Додано до мого саду') : '+ Додати до мого саду'}
         </button>
 
         {/* Success popup */}
