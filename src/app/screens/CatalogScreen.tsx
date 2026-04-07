@@ -1,17 +1,25 @@
 import React, { useState, useMemo } from 'react';
-import { Plus } from 'lucide-react';
 import { CatalogCard } from '../components/CatalogCard';
+import { DiseasesSection } from '../components/DiseasesSection';
+import { ToolsSection } from '../components/ToolsSection';
 import { catalog, searchPlants } from '../data/plants';
 import type { CategoryId } from '../types';
 
 type FilterId = 'all' | CategoryId;
+type Section = 'plants' | 'diseases' | 'tools';
+
+const SECTIONS: { id: Section; label: string; emoji: string }[] = [
+  { id: 'plants',   label: 'Рослини',    emoji: '🌱' },
+  { id: 'diseases', label: 'Хвороби',    emoji: '🦠' },
+  { id: 'tools',    label: 'Інструменти', emoji: '🪴' },
+];
 
 const FILTERS: { id: FilterId; label: string }[] = [
-  { id: 'all', label: 'Усі' },
-  { id: 'kvity', label: 'Квіти' },
-  { id: 'kushchi', label: 'Кущі' },
-  { id: 'plodovi', label: 'Плодові' },
-  { id: 'dekoratyvni', label: 'Декоративні' },
+  { id: 'all',          label: 'Усі' },
+  { id: 'kvity',        label: 'Квіти' },
+  { id: 'kushchi',      label: 'Кущі' },
+  { id: 'plodovi',      label: 'Плодові' },
+  { id: 'dekoratyvni',  label: 'Декоративні' },
 ];
 
 interface CatalogScreenProps {
@@ -19,6 +27,7 @@ interface CatalogScreenProps {
 }
 
 export function CatalogScreen({ onSelectPlant }: CatalogScreenProps) {
+  const [section, setSection] = useState<Section>('plants');
   const [activeFilter, setActiveFilter] = useState<FilterId>('all');
   const [query, setQuery] = useState('');
 
@@ -30,93 +39,125 @@ export function CatalogScreen({ onSelectPlant }: CatalogScreenProps) {
     return catalog.plants.filter((p) => p.category === activeFilter);
   }, [activeFilter, query]);
 
+  // When switching away from plants, clear search
+  const handleSectionChange = (s: Section) => {
+    setSection(s);
+    if (s !== 'plants') {
+      setQuery('');
+    }
+  };
+
   return (
     <div className="px-6 pt-12 pb-4">
       <h1 style={{ fontFamily: 'Caveat, cursive', fontSize: '40px', color: accent, fontWeight: 600, marginBottom: '4px' }}>
-        Каталог рослин 🌱
+        Каталог 📚
       </h1>
       <p style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '14px', color: accent, opacity: 0.6, marginBottom: '20px' }}>
-        Знайдіть ідеальні рослини для вашого саду
+        Рослини, хвороби і садові інструменти
       </p>
 
-      {/* Search */}
-      <div style={{ position: 'relative', marginBottom: '16px' }}>
-        <span style={{
-          position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)',
-          fontSize: '16px', pointerEvents: 'none',
-        }}>🔍</span>
-        <input
-          type="search"
-          placeholder="Пошук рослин..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          style={{
-            width: '100%', padding: '14px 16px 14px 40px',
-            border: `2px solid #BBFFD8`, borderRadius: '24px',
-            fontFamily: 'DM Sans, sans-serif', fontSize: '16px', color: accent,
-            backgroundColor: '#FFFFFF', outline: 'none', boxSizing: 'border-box',
-            WebkitAppearance: 'none',
-          }}
-        />
-        {query.length > 0 && (
+      {/* Section switcher */}
+      <div style={{
+        display: 'flex', backgroundColor: '#F1F5F9', borderRadius: '12px',
+        padding: '4px', gap: '4px', marginBottom: '20px',
+      }}>
+        {SECTIONS.map((s) => (
           <button
-            onClick={() => setQuery('')}
+            key={s.id}
+            onClick={() => handleSectionChange(s.id)}
             style={{
-              position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)',
-              background: 'none', border: 'none', cursor: 'pointer',
-              fontSize: '18px', color: accent, opacity: 0.4, padding: '4px',
-            }}
-          >✕</button>
-        )}
-      </div>
-
-      {/* Filters */}
-      <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '8px', marginBottom: '24px' }}>
-        {FILTERS.map((f) => (
-          <button
-            key={f.id}
-            onClick={() => { setActiveFilter(f.id); setQuery(''); }}
-            style={{
-              backgroundColor: activeFilter === f.id ? accent : 'transparent',
-              color: activeFilter === f.id ? '#FFFFFF' : accent,
-              border: `1px solid ${accent}`,
-              padding: '8px 16px', borderRadius: '20px',
-              fontFamily: 'DM Sans, sans-serif', fontSize: '13px', fontWeight: 500,
-              whiteSpace: 'nowrap', cursor: 'pointer', transition: 'all 0.2s ease',
+              flex: 1,
+              backgroundColor: section === s.id ? '#FFFFFF' : 'transparent',
+              color: section === s.id ? accent : `${accent}80`,
+              border: 'none',
+              padding: '10px 8px', borderRadius: '8px',
+              fontFamily: 'DM Sans, sans-serif', fontSize: '13px', fontWeight: section === s.id ? 600 : 400,
+              cursor: 'pointer',
+              boxShadow: section === s.id ? '0 1px 4px rgba(0,0,0,0.12)' : 'none',
+              transition: 'all 0.2s ease',
+              whiteSpace: 'nowrap',
             }}
           >
-            {f.label}
+            {s.emoji} {s.label}
           </button>
         ))}
       </div>
 
-      {/* Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', paddingBottom: '8px' }}>
-        {plants.map((plant, index) => (
-          <div key={plant.id} onClick={() => onSelectPlant(plant.id)} style={{ cursor: 'pointer' }}>
-            <CatalogCard
-              name={plant.name}
-              latinName={plant.latinName ?? ''}
-              category={plant.category}
-              index={index}
+      {/* Plants section */}
+      {section === 'plants' && (
+        <>
+          {/* Search */}
+          <div style={{ position: 'relative', marginBottom: '16px' }}>
+            <span style={{
+              position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)',
+              fontSize: '16px', pointerEvents: 'none',
+            }}>🔍</span>
+            <input
+              type="search"
+              placeholder="Пошук рослин..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              style={{
+                width: '100%', padding: '14px 16px 14px 40px',
+                border: `2px solid #BBFFD8`, borderRadius: '24px',
+                fontFamily: 'DM Sans, sans-serif', fontSize: '16px', color: accent,
+                backgroundColor: '#FFFFFF', outline: 'none', boxSizing: 'border-box',
+                WebkitAppearance: 'none',
+              }}
             />
+            {query.length > 0 && (
+              <button
+                onClick={() => setQuery('')}
+                style={{
+                  position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)',
+                  background: 'none', border: 'none', cursor: 'pointer',
+                  fontSize: '18px', color: accent, opacity: 0.4, padding: '4px',
+                }}
+              >✕</button>
+            )}
           </div>
-        ))}
-      </div>
 
-      {/* FAB */}
-      <button
-        style={{
-          position: 'fixed', bottom: '84px', right: '24px',
-          width: '52px', height: '52px', borderRadius: '50%',
-          backgroundColor: accent, color: '#FFFFFF', border: 'none',
-          boxShadow: '0 4px 12px rgba(30,58,95,0.3)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          cursor: 'pointer', zIndex: 20,
-        }}
-      >
-        <Plus size={22} />
-      </button>
+          {/* Category filters */}
+          <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '8px', marginBottom: '24px' }}>
+            {FILTERS.map((f) => (
+              <button
+                key={f.id}
+                onClick={() => { setActiveFilter(f.id); setQuery(''); }}
+                style={{
+                  backgroundColor: activeFilter === f.id ? accent : 'transparent',
+                  color: activeFilter === f.id ? '#FFFFFF' : accent,
+                  border: `1px solid ${accent}`,
+                  padding: '8px 16px', borderRadius: '20px',
+                  fontFamily: 'DM Sans, sans-serif', fontSize: '13px', fontWeight: 500,
+                  whiteSpace: 'nowrap', cursor: 'pointer', transition: 'all 0.2s ease',
+                }}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Plant grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', paddingBottom: '8px' }}>
+            {plants.map((plant, index) => (
+              <div key={plant.id} onClick={() => onSelectPlant(plant.id)} style={{ cursor: 'pointer' }}>
+                <CatalogCard
+                  name={plant.name}
+                  latinName={plant.latinName ?? ''}
+                  category={plant.category}
+                  index={index}
+                />
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* Diseases section */}
+      {section === 'diseases' && <DiseasesSection />}
+
+      {/* Tools section */}
+      {section === 'tools' && <ToolsSection />}
     </div>
   );
 }
