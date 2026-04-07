@@ -71,11 +71,13 @@ export function PlantDetailScreen({ plantId, onBack, onSelectPlant }: PlantDetai
 
   const alreadyInGarden = myGardenPlants.some(gp => gp.plantId === plantId);
   const [added, setAdded] = React.useState(alreadyInGarden);
+  const [removed, setRemoved] = React.useState(false);
   const [showPopup, setShowPopup] = React.useState(false);
 
   const handleAdd = () => {
     if (added) return;
     setAdded(true);
+    setRemoved(false);
     setShowPopup(true);
     setTimeout(() => setShowPopup(false), 3000);
   };
@@ -132,17 +134,41 @@ export function PlantDetailScreen({ plantId, onBack, onSelectPlant }: PlantDetai
           ))}
         </div>
 
-        {/* Add button */}
-        <button
-          onClick={handleAdd}
-          style={{
-            width: '100%', backgroundColor: added ? `${cfg.accent}99` : cfg.accent, color: '#FFFFFF',
-            padding: '14px', borderRadius: '4px', border: 'none', cursor: added ? 'default' : 'pointer',
-            fontFamily: 'Caveat, cursive', fontSize: '22px', fontWeight: 600, marginBottom: '32px',
-            transition: 'background-color 0.3s',
-          }}>
-          {added ? (alreadyInGarden ? '✓ Вже є в моєму саду' : '✓ Додано до мого саду') : '+ Додати до мого саду'}
-        </button>
+        {/* Add / Remove button */}
+        {added ? (
+          <div style={{ display: 'flex', gap: '10px', marginBottom: '32px' }}>
+            <div style={{
+              flex: 1, backgroundColor: `${cfg.accent}22`, color: cfg.accent,
+              padding: '14px', borderRadius: '4px', border: `1px solid ${cfg.accent}40`,
+              fontFamily: 'Caveat, cursive', fontSize: '22px', fontWeight: 600,
+              textAlign: 'center',
+            }}>
+              ✓ {alreadyInGarden && !removed ? 'Вже є в саду' : 'Додано до саду'}
+            </div>
+            <button
+              onClick={() => { setAdded(false); setRemoved(true); }}
+              style={{
+                backgroundColor: '#FEE2E2', color: '#DC2626',
+                padding: '14px 16px', borderRadius: '4px',
+                border: '1px solid #FECACA', cursor: 'pointer',
+                fontFamily: 'Caveat, cursive', fontSize: '20px', fontWeight: 600,
+                whiteSpace: 'nowrap', transition: 'background-color 0.2s',
+              }}>
+              🗑 Прибрати
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={handleAdd}
+            style={{
+              width: '100%', backgroundColor: cfg.accent, color: '#FFFFFF',
+              padding: '14px', borderRadius: '4px', border: 'none', cursor: 'pointer',
+              fontFamily: 'Caveat, cursive', fontSize: '22px', fontWeight: 600, marginBottom: '32px',
+              transition: 'background-color 0.3s',
+            }}>
+            + Додати до мого саду
+          </button>
+        )}
 
         {/* Success popup */}
         <div style={{
