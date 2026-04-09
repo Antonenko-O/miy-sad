@@ -40,8 +40,8 @@ export interface DiseasePart {
 export function parseDiseases(raw: string | null | undefined): DiseasePart[] {
   if (!raw || raw === 'null') return [];
 
-  // Split on comma, "та", "і"
-  const parts = raw.split(/,|та(?=\s)|(?<=\s)і(?=\s)/).map((s) => s.trim()).filter(Boolean);
+  // Split on comma, standalone "та" / "і" (not part of a word like "Борошниста")
+  const parts = raw.split(/,|(?<=\s)та(?=\s)|(?<=\s)і(?=\s)/).map((s) => s.trim()).filter(Boolean);
 
   return parts.map((part) => {
     const lower = part.toLowerCase();
