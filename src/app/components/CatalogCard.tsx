@@ -2,12 +2,14 @@ import React from 'react';
 import { PlantIcon } from './PlantIcon';
 import type { CategoryId } from '../types';
 import { CATEGORY_CONFIG } from '../types';
+import { getPlantImage } from '../utils/plantImages';
 
 interface CatalogCardProps {
   name: string;
   latinName: string;
   category: CategoryId;
   index: number;
+  plantId?: string;
 }
 
 const DIFFICULTY: Record<CategoryId, string> = {
@@ -17,9 +19,10 @@ const DIFFICULTY: Record<CategoryId, string> = {
   dekoratyvni: 'Легка',
 };
 
-export function CatalogCard({ name, latinName, category, index }: CatalogCardProps) {
+export function CatalogCard({ name, latinName, category, index, plantId }: CatalogCardProps) {
   const cfg = CATEGORY_CONFIG[category];
   const rotation = index % 2 === 0 ? '-1deg' : '0.8deg';
+  const imageUrl = plantId ? getPlantImage(plantId) : null;
 
   return (
     <div
@@ -50,9 +53,22 @@ export function CatalogCard({ name, latinName, category, index }: CatalogCardPro
         </svg>
       </div>
 
-      {/* Icon */}
-      <div style={{ marginBottom: '8px' }}>
-        <PlantIcon category={category} color={cfg.accent} size={48} opacity={0.5} />
+      {/* Image or icon */}
+      <div style={{ marginBottom: '8px', height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        {imageUrl ? (
+          <img
+            src={imageUrl}
+            alt={name}
+            style={{
+              width: '80px', height: '80px',
+              objectFit: 'cover',
+              borderRadius: '4px',
+              display: 'block',
+            }}
+          />
+        ) : (
+          <PlantIcon category={category} color={cfg.accent} size={48} opacity={0.5} />
+        )}
       </div>
 
       <h3 style={{ fontFamily: 'Caveat, cursive', fontSize: '22px', color: cfg.accent, fontWeight: 600, marginBottom: '2px' }}>

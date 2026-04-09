@@ -146,6 +146,7 @@ export function CatalogScreen({ onSelectPlant }: CatalogScreenProps) {
                   latinName={plant.latinName ?? ''}
                   category={plant.category}
                   index={index}
+                  plantId={plant.id}
                 />
               </div>
             ))}

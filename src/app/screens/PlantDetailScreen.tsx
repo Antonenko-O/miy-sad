@@ -3,6 +3,7 @@ import { getPlantById, getCompanions } from '../data/plants';
 import { PlantIcon } from '../components/PlantIcon';
 import { CATEGORY_CONFIG } from '../types';
 import { myGardenPlants } from '../data/myGarden';
+import { getPlantImage } from '../utils/plantImages';
 
 const MONTHS = ['Січ','Лют','Бер','Кві','Тра','Чер','Лип','Сер','Вер','Жов','Лис','Гру'];
 
@@ -69,6 +70,7 @@ export function PlantDetailScreen({ plantId, onBack, onSelectPlant }: PlantDetai
 
   const rotations = ['-0.8deg', '0.5deg', '-0.5deg', '0.7deg', '-0.6deg', '0.4deg'];
 
+  const imageUrl = getPlantImage(plantId);
   const alreadyInGarden = myGardenPlants.some(gp => gp.plantId === plantId);
   const [added, setAdded] = React.useState(alreadyInGarden);
   const [removed, setRemoved] = React.useState(false);
@@ -86,22 +88,48 @@ export function PlantDetailScreen({ plantId, onBack, onSelectPlant }: PlantDetai
     <div>
       {/* Hero */}
       <div style={{
-        height: '220px', background: `linear-gradient(135deg, ${cfg.cardColor} 0%, ${cfg.tabColor} 100%)`,
-        borderRadius: '0 0 16px 16px', position: 'relative',
+        height: '260px',
+        background: imageUrl
+          ? 'transparent'
+          : `linear-gradient(135deg, ${cfg.cardColor} 0%, ${cfg.tabColor} 100%)`,
+        borderRadius: '0 0 20px 20px', position: 'relative',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
+        overflow: 'hidden',
       }}>
+        {imageUrl ? (
+          <>
+            {/* Soft background tint behind image */}
+            <div style={{
+              position: 'absolute', inset: 0,
+              background: `linear-gradient(135deg, ${cfg.cardColor} 0%, ${cfg.tabColor} 100%)`,
+              opacity: 0.4,
+            }} />
+            <img
+              src={imageUrl}
+              alt={plant.name}
+              style={{
+                height: '240px', width: '240px',
+                objectFit: 'contain',
+                position: 'relative', zIndex: 1,
+                filter: 'drop-shadow(0 4px 16px rgba(0,0,0,0.12))',
+              }}
+            />
+          </>
+        ) : (
+          <PlantIcon category={plant.category} color={cfg.accent} size={100} opacity={0.4} />
+        )}
         <button
           onClick={onBack}
           style={{
-            position: 'absolute', top: '48px', left: '24px',
-            backgroundColor: 'rgba(255,255,255,0.9)', padding: '8px 14px',
+            position: 'absolute', top: '48px', left: '24px', zIndex: 2,
+            backgroundColor: 'rgba(255,255,255,0.92)', padding: '8px 14px',
             borderRadius: '20px', color: cfg.accent, fontFamily: 'DM Sans, sans-serif',
             fontSize: '13px', fontWeight: 500, border: 'none', cursor: 'pointer',
+            backdropFilter: 'blur(4px)',
           }}
         >
           ← До каталогу
         </button>
-        <PlantIcon category={plant.category} color={cfg.accent} size={100} opacity={0.4} />
       </div>
 
       <div className="px-6 pt-6">
