@@ -134,11 +134,21 @@ function DiseaseDetail({ disease, onBack }: DiseaseDetailProps) {
 
 type TypeFilter = 'all' | 'fungal' | 'bacterial' | 'pest';
 
-export function DiseasesSection() {
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+interface DiseasesSectionProps {
+  initialDiseaseId?: string;
+  onOpened?: () => void;
+}
+
+export function DiseasesSection({ initialDiseaseId, onOpened }: DiseasesSectionProps) {
+  const [selectedId, setSelectedId] = useState<string | null>(initialDiseaseId ?? null);
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
 
-  const { diseases, types } = diseasesData;
+  // Notify parent once we've consumed the initial disease
+  React.useEffect(() => {
+    if (initialDiseaseId) onOpened?.();
+  }, []);
+
+  const { diseases } = diseasesData;
 
   if (selectedId) {
     const disease = diseases.find((d) => d.id === selectedId);

@@ -4,6 +4,7 @@ import { PlantIcon } from '../components/PlantIcon';
 import { CATEGORY_CONFIG } from '../types';
 import { myGardenPlants } from '../data/myGarden';
 import { getPlantImage } from '../utils/plantImages';
+import { parseDiseases } from '../utils/diseaseMatch';
 
 const MONTHS = ['Січ','Лют','Бер','Кві','Тра','Чер','Лип','Сер','Вер','Жов','Лис','Гру'];
 
@@ -46,9 +47,10 @@ interface PlantDetailScreenProps {
   plantId: string;
   onBack: () => void;
   onSelectPlant: (id: string) => void;
+  onSelectDisease: (id: string) => void;
 }
 
-export function PlantDetailScreen({ plantId, onBack, onSelectPlant }: PlantDetailScreenProps) {
+export function PlantDetailScreen({ plantId, onBack, onSelectPlant, onSelectDisease }: PlantDetailScreenProps) {
   const plant = getPlantById(plantId);
   if (!plant) return <div className="px-6 pt-12"><p>Рослину не знайдено</p></div>;
 
@@ -61,8 +63,9 @@ export function PlantDetailScreen({ plantId, onBack, onSelectPlant }: PlantDetai
     { emoji: '🌱', label: 'Ґрунт', value: plant.soilType },
     { emoji: '✂️', label: 'Обрізка', value: plant.pruningTime },
     { emoji: '❄️', label: 'Зимівля', value: plant.winterCover },
-    { emoji: '🪲', label: 'Хвороби', value: plant.diseases },
   ].filter((i) => i.value && i.value !== 'None' && i.value !== 'null');
+
+  const diseaseParts = parseDiseases(plant.diseases);
 
   const bloomMonthIndices = parseMonthRange(plant.bloomMonths);
   const plantingMonthIndices = parseMonthRange(plant.plantingTime);
@@ -224,6 +227,54 @@ export function PlantDetailScreen({ plantId, onBack, onSelectPlant }: PlantDetai
             </div>
           ))}
         </div>
+
+        {/* Diseases — clickable chips */}
+        {diseaseParts.length > 0 && (
+          <div style={{
+            position: 'relative', padding: '14px 16px',
+            backgroundColor: cfg.cardColor,
+            transform: 'rotate(0.4deg)',
+            boxShadow: '2px 4px 10px rgba(0,0,0,0.08)', borderRadius: '4px',
+            marginBottom: '32px',
+          }}>
+            <Pin color={cfg.pinColor} />
+            <div style={{ display: 'flex', gap: '6px', alignItems: 'center', marginBottom: '8px' }}>
+              <div style={{ fontSize: '20px' }}>🪲</div>
+              <div style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '12px', color: cfg.accent, fontWeight: 600 }}>Хвороби та шкідники</div>
+            </div>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              {diseaseParts.map((part, i) =>
+                part.diseaseId ? (
+                  <button
+                    key={i}
+                    onClick={() => onSelectDisease(part.diseaseId!)}
+                    style={{
+                      backgroundColor: '#FEE2E2', color: '#DC2626',
+                      border: '1px solid #FECACA',
+                      padding: '5px 12px', borderRadius: '20px',
+                      fontFamily: 'DM Sans, sans-serif', fontSize: '12px', fontWeight: 500,
+                      cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px',
+                    }}
+                  >
+                    {part.text} →
+                  </button>
+                ) : (
+                  <span
+                    key={i}
+                    style={{
+                      backgroundColor: `${cfg.accent}15`, color: cfg.accent,
+                      border: `1px solid ${cfg.accent}25`,
+                      padding: '5px 12px', borderRadius: '20px',
+                      fontFamily: 'DM Sans, sans-serif', fontSize: '12px',
+                    }}
+                  >
+                    {part.text}
+                  </span>
+                )
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Seasonal calendar */}
         <h2 style={{ fontFamily: 'Caveat, cursive', fontSize: '28px', color: cfg.accent, fontWeight: 600, marginBottom: '12px' }}>

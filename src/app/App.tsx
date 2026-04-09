@@ -28,6 +28,7 @@ const BG_COLORS: Record<Tab | 'detail', string> = {
 export default function App() {
   const [activeTab, setActiveTab] = useState<Tab>('home');
   const [selectedPlantId, setSelectedPlantId] = useState<string | null>(null);
+  const [initialDiseaseId, setInitialDiseaseId] = useState<string | null>(null);
 
   const context: Tab | 'detail' = selectedPlantId ? 'detail' : activeTab;
 
@@ -43,7 +44,15 @@ export default function App() {
   const handleTabChange = (tab: Tab) => {
     setSelectedPlantId(null);
     setActiveTab(tab);
+    if (tab !== 'catalog') setInitialDiseaseId(null);
     window.scrollTo({ top: 0, behavior: 'instant' });
+  };
+
+  const handleSelectDisease = (diseaseId: string) => {
+    setSelectedPlantId(null);
+    setActiveTab('catalog');
+    setInitialDiseaseId(diseaseId);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
@@ -75,11 +84,16 @@ export default function App() {
             plantId={selectedPlantId}
             onBack={handleBack}
             onSelectPlant={handleSelectPlant}
+            onSelectDisease={handleSelectDisease}
           />
         ) : activeTab === 'home' ? (
           <HomeScreen onAddPlant={() => setActiveTab('catalog')} onSelectPlant={handleSelectPlant} />
         ) : activeTab === 'catalog' ? (
-          <CatalogScreen onSelectPlant={handleSelectPlant} />
+          <CatalogScreen
+            onSelectPlant={handleSelectPlant}
+            initialDiseaseId={initialDiseaseId}
+            onDiseaseOpened={() => setInitialDiseaseId(null)}
+          />
         ) : activeTab === 'garden' ? (
           <MyGardenScreen />
         ) : activeTab === 'calendar' ? (

@@ -24,10 +24,12 @@ const FILTERS: { id: FilterId; label: string }[] = [
 
 interface CatalogScreenProps {
   onSelectPlant: (id: string) => void;
+  initialDiseaseId?: string | null;
+  onDiseaseOpened?: () => void;
 }
 
-export function CatalogScreen({ onSelectPlant }: CatalogScreenProps) {
-  const [section, setSection] = useState<Section>('plants');
+export function CatalogScreen({ onSelectPlant, initialDiseaseId, onDiseaseOpened }: CatalogScreenProps) {
+  const [section, setSection] = useState<Section>(initialDiseaseId ? 'diseases' : 'plants');
   const [activeFilter, setActiveFilter] = useState<FilterId>('all');
   const [query, setQuery] = useState('');
 
@@ -155,7 +157,12 @@ export function CatalogScreen({ onSelectPlant }: CatalogScreenProps) {
       )}
 
       {/* Diseases section */}
-      {section === 'diseases' && <DiseasesSection />}
+      {section === 'diseases' && (
+        <DiseasesSection
+          initialDiseaseId={initialDiseaseId ?? undefined}
+          onOpened={onDiseaseOpened}
+        />
+      )}
 
       {/* Tools section */}
       {section === 'tools' && <ToolsSection />}
