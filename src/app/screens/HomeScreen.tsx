@@ -6,6 +6,7 @@ import { PlantIcon } from '../components/PlantIcon';
 import { catalog } from '../data/plants';
 import { getTodayTasks } from '../data/myGarden';
 import { CATEGORY_CONFIG } from '../types';
+import { getPlantImage } from '../utils/plantImages';
 
 const WaterIcon = () => (
   <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
@@ -116,7 +117,16 @@ export function HomeScreen({ onAddPlant, onSelectPlant }: HomeScreenProps) {
                   <path d="M8 2L9.5 5L12 6L10 8.5L10.5 11L8 9.5L5.5 11L6 8.5L4 6L6.5 5L8 2Z" />
                 </svg>
               </div>
-              <PlantIcon category={plant.category as import('../types').CategoryId} color={cfg.accent} size={36} opacity={0.5} />
+              {(() => {
+                const img = getPlantImage(plant.id);
+                return img ? (
+                  <div style={{ width: 44, height: 44, borderRadius: '50%', overflow: 'hidden', flexShrink: 0, backgroundColor: cfg.cardColor }}>
+                    <img src={img} alt={plant.name} style={{ width: '100%', height: '100%', objectFit: 'cover', mixBlendMode: 'multiply' }} />
+                  </div>
+                ) : (
+                  <PlantIcon category={plant.category as import('../types').CategoryId} color={cfg.accent} size={36} opacity={0.5} />
+                );
+              })()}
               <div style={{ flex: 1 }}>
                 <div style={{ fontFamily: 'Caveat, cursive', fontSize: '20px', color: cfg.accent, fontWeight: 600, lineHeight: 1.2 }}>
                   {plant.name}

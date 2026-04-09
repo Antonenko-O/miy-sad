@@ -300,7 +300,16 @@ export function PlantDetailScreen({ plantId, onBack, onSelectPlant }: PlantDetai
                   }}
                 >
                   <Pin color={cfg.pinColor} />
-                  <PlantIcon category={c.category} color={cfg.accent} size={40} opacity={0.6} />
+                  {(() => {
+                    const img = getPlantImage(c.id);
+                    return img ? (
+                      <div style={{ width: 56, height: 56, borderRadius: '50%', overflow: 'hidden', backgroundColor: cfg.cardColor }}>
+                        <img src={img} alt={c.name} style={{ width: '100%', height: '100%', objectFit: 'cover', mixBlendMode: 'multiply' }} />
+                      </div>
+                    ) : (
+                      <PlantIcon category={c.category} color={cfg.accent} size={40} opacity={0.6} />
+                    );
+                  })()}
                   <div style={{ fontFamily: 'Caveat, cursive', fontSize: '16px', color: cfg.accent, fontWeight: 600, textAlign: 'center' }}>
                     {c.name}
                   </div>

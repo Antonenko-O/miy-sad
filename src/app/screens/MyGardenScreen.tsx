@@ -5,6 +5,7 @@ import { CareDrawer } from '../components/CareDrawer';
 import { myGardenPlants, getTodayTasks } from '../data/myGarden';
 import { getPlantById } from '../data/plants';
 import type { CareTask } from '../data/myGarden';
+import { getPlantImage } from '../utils/plantImages';
 
 const Pin = ({ color }: { color: string }) => (
   <div style={{ position: 'absolute', top: '-8px', left: '50%', transform: 'translateX(-50%)' }}>
@@ -105,7 +106,16 @@ export function MyGardenScreen() {
               cursor: 'pointer',
             }}>
               <Pin color={pinColor} />
-              <PlantIcon category={gp.category} color={accent} size={44} opacity={0.45} />
+              {(() => {
+                const img = getPlantImage(gp.plantId);
+                return img ? (
+                  <div style={{ width: 52, height: 52, borderRadius: '50%', overflow: 'hidden', flexShrink: 0, backgroundColor: cardBg }}>
+                    <img src={img} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover', mixBlendMode: 'multiply' }} />
+                  </div>
+                ) : (
+                  <PlantIcon category={gp.category} color={accent} size={44} opacity={0.45} />
+                );
+              })()}
               <div style={{ flex: 1 }}>
                 <h3 style={{ fontFamily: 'Caveat, cursive', fontSize: '24px', color: accent, fontWeight: 600, marginBottom: '2px' }}>
                   {name}
