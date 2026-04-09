@@ -89,32 +89,21 @@ export function PlantDetailScreen({ plantId, onBack, onSelectPlant }: PlantDetai
       {/* Hero */}
       <div style={{
         height: '260px',
-        background: imageUrl
-          ? 'transparent'
-          : `linear-gradient(135deg, ${cfg.cardColor} 0%, ${cfg.tabColor} 100%)`,
+        background: `linear-gradient(135deg, ${cfg.cardColor} 0%, ${cfg.tabColor} 100%)`,
         borderRadius: '0 0 20px 20px', position: 'relative',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         overflow: 'hidden',
       }}>
         {imageUrl ? (
-          <>
-            {/* Soft background tint behind image */}
-            <div style={{
-              position: 'absolute', inset: 0,
-              background: `linear-gradient(135deg, ${cfg.cardColor} 0%, ${cfg.tabColor} 100%)`,
-              opacity: 0.4,
-            }} />
-            <img
-              src={imageUrl}
-              alt={plant.name}
-              style={{
-                height: '240px', width: '240px',
-                objectFit: 'contain',
-                position: 'relative', zIndex: 1,
-                filter: 'drop-shadow(0 4px 16px rgba(0,0,0,0.12))',
-              }}
-            />
-          </>
+          <img
+            src={imageUrl}
+            alt={plant.name}
+            style={{
+              height: '260px', width: '260px',
+              objectFit: 'contain',
+              mixBlendMode: 'multiply',
+            }}
+          />
         ) : (
           <PlantIcon category={plant.category} color={cfg.accent} size={100} opacity={0.4} />
         )}
