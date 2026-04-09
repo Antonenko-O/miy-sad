@@ -54,22 +54,25 @@ export function CatalogCard({ name, latinName, category, index, plantId }: Catal
       </div>
 
       {/* Image or icon */}
-      <div style={{ marginBottom: '8px', height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        {imageUrl ? (
-          <img
-            src={imageUrl}
-            alt={name}
-            style={{
-              width: '80px', height: '80px',
-              objectFit: 'cover',
-              borderRadius: '4px',
-              display: 'block',
-            }}
-          />
-        ) : (
+      {imageUrl ? (
+        <img
+          src={imageUrl}
+          alt={name}
+          style={{
+            width: 'calc(100% + 32px)',
+            marginLeft: '-16px',
+            height: '120px',
+            objectFit: 'contain',
+            mixBlendMode: 'multiply',
+            display: 'block',
+            marginBottom: '8px',
+          }}
+        />
+      ) : (
+        <div style={{ marginBottom: '8px', height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <PlantIcon category={category} color={cfg.accent} size={48} opacity={0.5} />
-        )}
-      </div>
+        </div>
+      )}
 
       <h3 style={{ fontFamily: 'Caveat, cursive', fontSize: '22px', color: cfg.accent, fontWeight: 600, marginBottom: '2px' }}>
         {name}
